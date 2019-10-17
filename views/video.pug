@@ -1,0 +1,14 @@
+doctype html
+html(lang="en")
+  head
+    title= 'Video Portal'
+    style
+      include style.css
+  body
+    h1=title
+    video(width="640", height="480", controls, autoplay)
+        source(src=url, type="video/mp4")
+        p Your browser does not support the video tag.
+
+
+    

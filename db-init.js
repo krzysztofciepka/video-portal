@@ -10,13 +10,15 @@ async function modelMapper(dir, filename) {
     const filepath = path.join(dir, filename);
     const stats = await fs.stat(filepath);
 
-    await new ffmpeg(filepath)
+    await new Promise(resolve => new ffmpeg(filepath)
         .takeScreenshots({
             count: 4,
             size: '320x240',
             filename: '%f_%i',
             timestamps: ['25%', '50%', '75%', '95%']
-        }, path.join(dir, '.thumbnails'));
+        }, path.join(dir, '.thumbnails')).on('end', function () {
+            resolve();
+        }));
 
     return {
         id: uuid(),
