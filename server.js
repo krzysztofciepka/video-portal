@@ -17,13 +17,20 @@ app.use(async (req, res, next) => {
 
 app.get('/', async (req, res) => {
     const page = req.query.page ? parseInt(req.query.page) : 1
+    const videosCount = await app.locals.db.collection("videos").countDocuments();
+    const total = Math.ceil(videosCount / 20)
+
+    if (page > total) {
+        return res.sendStatus(404)
+    }
+
     const videos = await app.locals.db.collection("videos")
         .find({})
         .sort({ created_at: 1 })
         .skip(20 * (page - 1))
         .limit(20)
         .toArray();
-    res.render('index', { videos, current: page, total: 10 });
+    res.render('index', { videos, current: page, total });
 });
 
 app.get('/videos/:id', async (req, res) => {
