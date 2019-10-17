@@ -1,0 +1,56 @@
+.grid-container {
+    display: grid;
+    grid-row-gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 320px));
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+a, img, .grid-item {
+    width: 320px;
+    height: 240px;
+}
+
+  #fadeImage {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  #fadeImage img {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    opacity: 1;
+    transition: opacity 0.5s linear;
+  }
+  
+  #image1 {
+    z-index: 4;
+  }
+  
+  #image2 {
+    z-index: 3;
+  }
+  
+  #image3 {
+    z-index: 2;
+  }
+
+  #image4 {
+    z-index: 1;
+  }
+  
+  #fadeImage:hover #image1 {
+    opacity: 0;
+    transition-delay: 0.75s;
+  }
+  
+  #fadeImage:hover #image2 {
+    opacity: 0;
+    transition-delay: 1.5s;
+  }
+  
+  #fadeImage:hover #image3 {
+    opacity: 0;
+    transition-delay: 2.25s;
+  }

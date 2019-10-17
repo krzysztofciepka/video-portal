@@ -1,0 +1,30 @@
+{
+  "name": "video-portal",
+  "version": "0.1.0",
+  "description": "Portal for video hosting",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krzysztofciepka/video-portal.git"
+  },
+  "keywords": [
+    "video",
+    "portal"
+  ],
+  "author": "kciepka <krzysztof@ciepka.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/krzysztofciepka/video-portal/issues"
+  },
+  "homepage": "https://github.com/krzysztofciepka/video-portal#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "fluent-ffmpeg": "^2.1.2",
+    "mongodb": "^3.3.3",
+    "pug": "^2.0.4",
+    "uuid": "^3.3.3"
+  }
+}
