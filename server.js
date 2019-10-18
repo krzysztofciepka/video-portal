@@ -1,4 +1,5 @@
 const express = require('express');
+const compression = require('compression');
 const MongoClient = require('mongodb').MongoClient;
 const fs = require('fs');
 
@@ -15,7 +16,7 @@ app.use(async (req, res, next) => {
     next();
 });
 
-app.get('/', async (req, res) => {
+app.get('/', compression(), async (req, res) => {
     const page = req.query.page ? parseInt(req.query.page) : 1
     const videosCount = await app.locals.db.collection("videos").countDocuments();
     const total = Math.ceil(videosCount / 20)
@@ -33,7 +34,7 @@ app.get('/', async (req, res) => {
     res.render('index', { videos, current: page, total, prefix: "?page=" });
 });
 
-app.get('/videos/:id', async (req, res) => {
+app.get('/videos/:id',compression(), async (req, res) => {
     const video = await app.locals.db.collection("videos")
         .findOne({ id: req.params.id });
 
