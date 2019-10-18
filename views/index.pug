@@ -3,7 +3,8 @@ html(lang="en")
   include includes/header.pug
   include includes/mixins.pug
   body
-    h1 Videos
+    a(href="/", class="header")
+      h1='Videos'
     .video-container
         each v in videos
             +vid(v.name, '/videos/'+v.id, v.thumbnails)

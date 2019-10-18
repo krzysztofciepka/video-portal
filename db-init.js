@@ -11,7 +11,7 @@ async function modelMapper(dir, filename) {
     const filepath = path.join(dir, filename);
     const stats = await fs.stat(filepath);
 
-    await new Promise(resolve => new ffmpeg(filepath)
+    await new Promise((resolve, reject) => new ffmpeg(filepath)
         .takeScreenshots({
             count: 5,
             size: '320x240',
@@ -55,11 +55,17 @@ async function toModels(dir, mapper) {
     const db = await MongoClient.connect(dbUrl, { useUnifiedTopology: true })
     const dbo = db.db('video-portal');
 
-    await dbo.dropCollection('videos');
+    try{
+        await dbo.dropCollection('videos');
+    }
+    catch(err){
+        console.error(err)
+    }
+    
     const videos = await dbo.createCollection('videos');
 
     const models = await toModels(dir, modelMapper);
-    await videos.insertMany(models);
+    await videos.insertMany(models);r
 
     db.close();
 })()

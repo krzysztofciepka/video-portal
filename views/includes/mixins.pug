@@ -5,7 +5,7 @@ mixin header
     include style.css
 
 mixin vid(title, link, thumbnails)
-  a#fadeImage(href=link)
+  a#fadeImage(href=link, class="thumbnail")
     img#image1(src=thumbnails[0])
     img#image2(src=thumbnails[1])
     img#image3(src=thumbnails[2])

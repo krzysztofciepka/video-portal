@@ -41,7 +41,7 @@ app.get('/videos/:id', async (req, res) => {
         return res.sendStatus(404);
     }
 
-    const suggestions = await app.locals.db.collection("videos").aggregate([{ $sample: { size: 8 } }])
+    const suggestions = await app.locals.db.collection("videos").aggregate([{ $sample: { size: 8 } }]).toArray();
 
     res.render('video', { title: video.name, url: '/stream/' + video.id, suggestions });
 });
