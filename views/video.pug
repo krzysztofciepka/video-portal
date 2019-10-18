@@ -3,10 +3,12 @@ html(lang="en")
   include includes/header.pug
   include includes/mixins.pug
   body
-    h1=title
+    a(href="/", class="header")
+      h1='Video Portal'
     video(width="640", height="480", controls, autoplay)
         source(src=url, type="video/mp4")
         p Your browser does not support the video tag.
+    h3=title
     h2 See also
     div(class="video-container")
       each v in suggestions

@@ -4,7 +4,7 @@ html(lang="en")
   include includes/mixins.pug
   body
     a(href="/", class="header")
-      h1='Videos'
+      h1='Video Portal'
     .video-container
         each v in videos
             +vid(v.name, '/videos/'+v.id, v.thumbnails)

@@ -5,12 +5,14 @@ mixin header
     include style.css
 
 mixin vid(title, link, thumbnails)
-  a#fadeImage(href=link, class="thumbnail")
-    img#image1(src=thumbnails[0])
-    img#image2(src=thumbnails[1])
-    img#image3(src=thumbnails[2])
-    img#image4(src=thumbnails[3])
-    img#image5(src=thumbnails[4])
+  div(class='thumbnail')
+    a(href=link)
+      img(src=thumbnails[0], class="image1")
+      img(src=thumbnails[1], class="image2")
+      img(src=thumbnails[2], class="image3")
+      img(src=thumbnails[3], class="image4")
+      img(src=thumbnails[4], class="image5")
+    p=title
 
 mixin pagination(current, total, prefix)
   div(class="pagination")

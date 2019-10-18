@@ -1,5 +1,7 @@
 body {
   font-family: "Open Sans", sans-serif;
+  background-color: #252526;
+  color: #cccccc;
 }
 
 .video-container {
@@ -34,21 +36,34 @@ video {
 }
 
 .header{
+  color: #cccccc;
+  text-decoration: none;
   display: flex;
 }
 
 /* Video preview styling */
-#fadeImage {
+.thumbnail {
   position: relative;
   overflow: hidden;
+  width: 320px;
+  height: 300px;
 }
 
-.thumbnail {
+.thumbnail a {
   width: 320px;
   height: 240px;
 }
 
-#fadeImage img {
+.thumbnail p {
+  position: absolute;
+  top: 240px;
+  left: 0;
+  margin: 0;
+  margin-top: 5px;
+  color: #cccccc;
+}
+
+.thumbnail img {
   position: absolute;
   top: 0px;
   left: 0px;
@@ -56,42 +71,42 @@ video {
   transition: opacity 0.5s linear;
 }
 
-#image1 {
+.image1 {
   z-index: 5;
 }
 
-#image2 {
+.image2 {
   z-index: 4;
 }
 
-#image3 {
+.image3 {
   z-index: 3;
 }
 
-#image4 {
+.image4 {
   z-index: 2;
 }
 
-#image5 {
+.image5 {
   z-index: 1;
 }
 
-#fadeImage:hover #image1 {
+.thumbnail:hover .image1 {
   opacity: 0;
   transition-delay: 0.75s;
 }
 
-#fadeImage:hover #image2 {
+.thumbnail:hover .image2 {
   opacity: 0;
   transition-delay: 1.5s;
 }
 
-#fadeImage:hover #image3 {
+.thumbnail:hover .image3 {
   opacity: 0;
   transition-delay: 2.25s;
 }
 
-#fadeImage:hover #image4 {
+.thumbnail:hover .image4 {
   opacity: 0;
   transition-delay: 3s;
 }
@@ -102,7 +117,7 @@ video {
 }
 
 .pagination a {
-  color: black;
+  color: #cccccc;
   float: left;
   padding: 8px 16px;
   text-decoration: none;
@@ -111,13 +126,14 @@ video {
 }
 
 .pagination a.active {
-  background-color: red;
-  color: white;
-  border: 1px solid red;
+  background-color: #1e1e1e;
+  color: #cccccc;
+  border: 1px solid #1e1e1e;
 }
 
 .pagination a:hover:not(.active) {
-  background-color: #ddd;
+  background-color: #cccccc;
+  color: #252526
 }
 
 .pagination-btn {
