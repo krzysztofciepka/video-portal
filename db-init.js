@@ -1,5 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
-const fs = require('fs').promises;
+const fsPromises = require('fs').promises;
+const fs = require('fs')
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 const uuid = require('uuid').v4
@@ -9,9 +10,10 @@ const dir = process.env.CONTENT_DIR || "./content";
 
 async function modelMapper(dir, filename) {
     const filepath = path.join(dir, filename);
-    const stats = await fs.stat(filepath);
+    const stats = await fsPromises.stat(filepath);
 
-    await new Promise((resolve, reject) => new ffmpeg(filepath)
+    if(!fs.existsSync(path.join(dir, '.thumbnails', filename + '_5.png'))){
+        await new Promise((resolve, reject) => new ffmpeg(filepath)
         .takeScreenshots({
             count: 5,
             size: '320x240',
@@ -20,6 +22,7 @@ async function modelMapper(dir, filename) {
         }, path.join(dir, '.thumbnails'))
         .on('end', resolve)
         .on('error', reject));
+    }
 
     return {
         id: uuid(),
@@ -29,21 +32,21 @@ async function modelMapper(dir, filename) {
         name: path.parse(filename).name,
         type: path.parse(filename).ext.slice(1),
         thumbnails: [
-            'data:image/png;base64,' + await fs.readFile(path.join(dir, '.thumbnails', filename + '_1.png'), 'base64'),
-            'data:image/png;base64,' + await fs.readFile(path.join(dir, '.thumbnails', filename + '_2.png'), 'base64'),
-            'data:image/png;base64,' + await fs.readFile(path.join(dir, '.thumbnails', filename + '_3.png'), 'base64'),
-            'data:image/png;base64,' + await fs.readFile(path.join(dir, '.thumbnails', filename + '_4.png'), 'base64'),
-            'data:image/png;base64,' + await fs.readFile(path.join(dir, '.thumbnails', filename + '_5.png'), 'base64'),
+            'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_1.png'), 'base64'),
+            'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_2.png'), 'base64'),
+            'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_3.png'), 'base64'),
+            'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_4.png'), 'base64'),
+            'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_5.png'), 'base64'),
         ]
     }
 }
 
 async function toModels(dir, mapper) {
-    const files = await fs.readdir(dir);
+    const files = await fsPromises.readdir(dir);
     const entries = [];
     for (const f of files) {
         try{
-            const stat = await fs.stat(path.join(dir, f))
+            const stat = await fsPromises.stat(path.join(dir, f))
             if (stat.isFile()) {
                 entries.push(await mapper(dir, f));
             }
