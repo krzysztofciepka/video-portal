@@ -1,8 +1,8 @@
 const express = require('express');
 const MongoClient = require('mongodb').MongoClient;
 const fs = require('fs');
-const app = express();
 
+const app = express();
 app.set('view engine', 'pug');
 app.set('views', './views');
 
@@ -30,7 +30,7 @@ app.get('/', async (req, res) => {
         .skip(20 * (page - 1))
         .limit(20)
         .toArray();
-    res.render('index', { videos, current: page, total });
+    res.render('index', { videos, current: page, total, prefix: "?page=" });
 });
 
 app.get('/videos/:id', async (req, res) => {
@@ -70,12 +70,11 @@ app.get('/stream/:id', async (req, res) => {
         "Content-Type": "video/mp4"
     });
 
-    const stream = fs.createReadStream(video.path, { start: start, end: end })
-        .on("open", function () {
+    const stream = fs.createReadStream(video.path, { start, end })
+        .on("open", () => {
             stream.pipe(res);
-        }).on("error", function (err) {
-            res.end(err);
-        });
+        })
+        .on("error", res.end);
 });
 
 app.listen(3000, () => {

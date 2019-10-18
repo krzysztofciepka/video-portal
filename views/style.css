@@ -1,68 +1,76 @@
 body {
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
 }
 
 .grid-container {
-    display: grid;
-    grid-row-gap: 30px;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 320px));
-    align-items: center;
-    justify-content: space-evenly;
+  display: grid;
+  grid-row-gap: 30px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 320px));
+  align-items: center;
+  justify-content: space-evenly;
 }
 
-img, .grid-item {
-    width: 320px;
-    height: 240px;
+video {
+  width: 100%;
 }
 
-  #fadeImage {
-    position: relative;
-    overflow: hidden;
-  }
-  
-  #fadeImage img {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    opacity: 1;
-    transition: opacity 0.5s linear;
-  }
-  
-  #image1 {
-    z-index: 4;
-  }
-  
-  #image2 {
-    z-index: 3;
-  }
-  
-  #image3 {
-    z-index: 2;
-  }
-
-  #image4 {
-    z-index: 1;
-  }
-  
-  #fadeImage:hover #image1 {
-    opacity: 0;
-    transition-delay: 0.75s;
-  }
-  
-  #fadeImage:hover #image2 {
-    opacity: 0;
-    transition-delay: 1.5s;
-  }
-  
-  #fadeImage:hover #image3 {
-    opacity: 0;
-    transition-delay: 2.25s;
-  }
-
-  video {
-    width: 100%
+/* Video preview styling */
+#fadeImage {
+  position: relative;
+  overflow: hidden;
 }
 
+#fadeImage img {
+  position: absolute;
+  width: 320px;
+  height: 240px;
+  top: 0px;
+  left: 0px;
+  opacity: 1;
+  transition: opacity 0.5s linear;
+}
+
+#image1 {
+  z-index: 5;
+}
+
+#image2 {
+  z-index: 4;
+}
+
+#image3 {
+  z-index: 3;
+}
+
+#image4 {
+  z-index: 2;
+}
+
+#image5 {
+  z-index: 1;
+}
+
+#fadeImage:hover #image1 {
+  opacity: 0;
+  transition-delay: 0.75s;
+}
+
+#fadeImage:hover #image2 {
+  opacity: 0;
+  transition-delay: 1.5s;
+}
+
+#fadeImage:hover #image3 {
+  opacity: 0;
+  transition-delay: 2.25s;
+}
+
+#fadeImage:hover #image4 {
+  opacity: 0;
+  transition-delay: 3s;
+}
+
+/* Pagination styling */
 .pagination {
   display: inline-block;
 }
@@ -72,7 +80,7 @@ img, .grid-item {
   float: left;
   padding: 8px 16px;
   text-decoration: none;
-  transition: background-color .3s;
+  transition: background-color 0.3s;
   border: 1px solid #ddd;
 }
 
@@ -82,13 +90,15 @@ img, .grid-item {
   border: 1px solid red;
 }
 
-.pagination a:hover:not(.active) {background-color: #ddd;}
+.pagination a:hover:not(.active) {
+  background-color: #ddd;
+}
 
-.pagination-btn{
+.pagination-btn {
   margin: 20px 5px;
 }
 
-.pagination-container{
+.pagination-container {
   display: flex;
   justify-content: center;
 }

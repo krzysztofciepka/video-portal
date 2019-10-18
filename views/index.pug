@@ -1,40 +1,15 @@
 doctype html
 html(lang="en")
-  head
-    title= 'Video Portal'
-    link(href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap", rel="stylesheet")
-    style
-      include style.css
+  include includes/header.pug
+  include includes/mixins.pug
   body
-    mixin vid(title, link, thumbnails)
-        .grid-item
-          a#fadeImage(href=link)
-            img#image1(src=thumbnails[0])
-            img#image2(src=thumbnails[1])
-            img#image3(src=thumbnails[2])
-            img#image4(src=thumbnails[3])
-    
-    mixin pagination(current, total)
-      div(class="pagination")
-        - let prev = []; for(let i= current-1; i>(current > 6 ? current-6: 0); i--){prev.push(i)}; prev = prev.reverse()
-        if(current > 1)
-          a(href="?page="+ (current-1 ), class="pagination-btn")='previous'
-        each page in prev
-          a(href="?page="+page, class="pagination-btn")=page
-        a(href="?page="+current, class="pagination-btn active")=current
-        - let next = []; for(let i=current+1; i < ((total-current> 5)? current+5 : total+1); i++) {next.push(i)};
-        each page in next
-          a(href="?page=" + page, class="pagination-btn")=page
-        if((current) < total)
-          a(href="?page="+ (current+1), class="pagination-btn")='next'
-
     h1 Videos
     .grid-container
         each v in videos
             +vid(v.name, '/videos/'+v.id, v.thumbnails)
 
     div(class="pagination-container")
-      +pagination(current, total)
+      +pagination(current, total, prefix)
 
 
     

@@ -3,6 +3,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 const uuid = require('uuid').v4
+
 const dbUrl = process.env.MONGO_URL || "mongodb://localhost:27017/video-portal";
 const dir = process.env.CONTENT_DIR || "./content";
 
@@ -12,13 +13,13 @@ async function modelMapper(dir, filename) {
 
     await new Promise(resolve => new ffmpeg(filepath)
         .takeScreenshots({
-            count: 4,
+            count: 5,
             size: '320x240',
             filename: '%f_%i',
-            timestamps: ['25%', '50%', '75%', '95%']
-        }, path.join(dir, '.thumbnails')).on('end', function () {
-            resolve();
-        }));
+            timestamps: ['10%', '30%', '50%', '70%', '90%']
+        }, path.join(dir, '.thumbnails'))
+        .on('end', resolve)
+        .on('error', reject));
 
     return {
         id: uuid(),
@@ -31,7 +32,8 @@ async function modelMapper(dir, filename) {
             'data:image/png;base64,' + await fs.readFile(path.join(dir, '.thumbnails', filename + '_1.png'), 'base64'),
             'data:image/png;base64,' + await fs.readFile(path.join(dir, '.thumbnails', filename + '_2.png'), 'base64'),
             'data:image/png;base64,' + await fs.readFile(path.join(dir, '.thumbnails', filename + '_3.png'), 'base64'),
-            'data:image/png;base64,' + await fs.readFile(path.join(dir, '.thumbnails', filename + '_4.png'), 'base64')
+            'data:image/png;base64,' + await fs.readFile(path.join(dir, '.thumbnails', filename + '_4.png'), 'base64'),
+            'data:image/png;base64,' + await fs.readFile(path.join(dir, '.thumbnails', filename + '_5.png'), 'base64'),
         ]
     }
 }
