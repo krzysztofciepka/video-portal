@@ -70,7 +70,7 @@ async function toModels(dir, mapper) {
     const videos = await dbo.createCollection('videos');
 
     const models = await toModels(dir, modelMapper);
-    await videos.insertMany(models);r
+    await videos.insertMany(models);
 
     db.close();
 })()
