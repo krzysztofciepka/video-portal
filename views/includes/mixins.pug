@@ -10,17 +10,27 @@ mixin vid(title, link, thumbnails)
     img#image2(src=thumbnails[1])
     img#image3(src=thumbnails[2])
     img#image4(src=thumbnails[3])
-    img#image4(src=thumbnails[4])
+    img#image5(src=thumbnails[4])
 
 mixin pagination(current, total, prefix)
   div(class="pagination")
-    - let prev = []; for(let i= current-1; i>(current > 6 ? current-6: 0); i--){prev.push(i)}; prev = prev.reverse()
+    - 
+      let prev = []; 
+      for(let i= current-1; i>(current > 6 ? current-6: 0); i--){
+        prev.push(i)
+      }
+      prev = prev.reverse()
     if(current > 1)
       a(href=prefix + (current-1 ), class="pagination-btn")='previous'
     each page in prev
       a(href=prefix + page, class="pagination-btn")=page
     a(href=prefix + current, class="pagination-btn active")=current
-    - let next = []; for(let i=current+1; i < ((total-current> 5)? current+5 : total+1); i++) {next.push(i)};
+    - 
+      let next = []; 
+      for(let i=current+1; i < ((total-current> 5)? current+5 : total+1); i++) 
+        {
+          next.push(i)
+        };
     each page in next
       a(href=prefix + page, class="pagination-btn")=page
     if((current) < total)

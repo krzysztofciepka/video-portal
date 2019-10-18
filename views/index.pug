@@ -4,7 +4,7 @@ html(lang="en")
   include includes/mixins.pug
   body
     h1 Videos
-    .grid-container
+    .video-container
         each v in videos
             +vid(v.name, '/videos/'+v.id, v.thumbnails)
 

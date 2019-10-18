@@ -41,7 +41,9 @@ app.get('/videos/:id', async (req, res) => {
         return res.sendStatus(404);
     }
 
-    res.render('video', { title: video.name, url: '/stream/' + video.id });
+    const suggestions = await app.locals.db.collection("videos").aggregate([{ $sample: { size: 8 } }])
+
+    res.render('video', { title: video.name, url: '/stream/' + video.id, suggestions });
 });
 
 app.get('/stream/:id', async (req, res) => {
@@ -67,7 +69,7 @@ app.get('/stream/:id', async (req, res) => {
         "Content-Range": "bytes " + start + "-" + end + "/" + total,
         "Accept-Ranges": "bytes",
         "Content-Length": chunksize,
-        "Content-Type": "video/mp4"
+        "Content-Type": "video/" + video.type
     });
 
     const stream = fs.createReadStream(video.path, { start, end })
@@ -78,5 +80,5 @@ app.get('/stream/:id', async (req, res) => {
 });
 
 app.listen(3000, () => {
-    console.log('server started');
+    console.log('Video portal up and running on port 3000!');
 });

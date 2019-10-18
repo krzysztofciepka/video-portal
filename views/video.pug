@@ -6,6 +6,11 @@ html(lang="en")
     video(width="640", height="480", controls, autoplay)
         source(src=url, type="video/mp4")
         p Your browser does not support the video tag.
+    p See also
+    div(class="video-container")
+      each v in suggestions
+        +vid(v.name, '/videos/'+v.id, v.thumbnails)
+
 
 
     

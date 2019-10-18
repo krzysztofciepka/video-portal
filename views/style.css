@@ -2,7 +2,7 @@ body {
   font-family: "Open Sans", sans-serif;
 }
 
-.grid-container {
+.video-container {
   display: grid;
   grid-row-gap: 30px;
   grid-template-columns: repeat(auto-fill, minmax(320px, 320px));
