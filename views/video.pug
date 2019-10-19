@@ -6,14 +6,10 @@ html(lang="en")
     a(href="/", class="header")
       h1=header
     video(width="640", height="480", controls, autoplay)
-        source(src=url, type="video/" + type)
-        p Your browser does not support the video tag.
+      source(src=url, type="video/" + type)
+      p Your browser does not support the video tag.
     h3=title
     h2 See also
     div(class="video-container")
       each v in suggestions
         +vid(v.name, '/videos/'+v.id, v.thumbnails)
-
-
-
-    

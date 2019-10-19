@@ -6,11 +6,7 @@ html(lang="en")
     a(href="/", class="header")
       h1=header
     .video-container
-        each v in videos
-            +vid(v.name, '/videos/'+v.id, v.thumbnails)
-
+      each v in videos
+        +vid(v.name, '/videos/'+v.id, v.thumbnails)
     div(class="pagination-container")
       +pagination(current, total, prefix)
-
-
-    
