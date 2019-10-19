@@ -6,15 +6,17 @@ const basicAuth = require('express-basic-auth');
 
 const username = process.env.USERNAME || 'admin';
 const password = process.env.PASSWORD || 'admin';
+const maxItemsOnPage = parseInt(process.env.MAX_ITEMS || '20');
+const mongoUrl = process.env.DB_URL || "mongodb://localhost:27017/video-portal";
+const serverPort = parseInt(process.env.PORT || 3000);
+const appName = process.env.APP_NAME || 'Video Portal';
 
 const app = express();
 app.set('view engine', 'pug');
 app.set('views', './views');
 
 app.use(async (req, res, next) => {
-    const db = await MongoClient.connect(
-        process.env.DB_URL || "mongodb://localhost:27017/video-portal",
-        { useUnifiedTopology: true });
+    const db = await MongoClient.connect(mongoUrl, { useUnifiedTopology: true });
     const dbo = await db.db('video-portal');
     app.locals.db = dbo;
     next();
@@ -26,7 +28,7 @@ app.get('/', basicAuth({
 }), compression(), async (req, res) => {
     const page = req.query.page ? parseInt(req.query.page) : 1
     const videosCount = await app.locals.db.collection("videos").countDocuments();
-    const total = Math.ceil(videosCount / 20)
+    const total = Math.ceil(videosCount / maxItemsOnPage)
 
     if (page > total) {
         return res.sendStatus(404)
@@ -35,10 +37,10 @@ app.get('/', basicAuth({
     const videos = await app.locals.db.collection("videos")
         .find({})
         .sort({ created_at: 1 })
-        .skip(20 * (page - 1))
-        .limit(20)
+        .skip(maxItemsOnPage * (page - 1))
+        .limit(maxItemsOnPage)
         .toArray();
-    res.render('index', { videos, current: page, total, prefix: "?page=" });
+    res.render('index', { header: appName, videos, current: page, total, prefix: "?page=" });
 });
 
 app.get('/videos/:id', basicAuth({
@@ -54,7 +56,7 @@ app.get('/videos/:id', basicAuth({
 
     const suggestions = await app.locals.db.collection("videos").aggregate([{ $sample: { size: 8 } }]).toArray();
 
-    res.render('video', { title: video.name, url: '/stream/' + video.id, suggestions });
+    res.render('video', { header: appName, title: video.name, url: '/stream/' + video.id, suggestions, type: video.type });
 });
 
 app.get('/stream/:id', async (req, res) => {
@@ -90,6 +92,6 @@ app.get('/stream/:id', async (req, res) => {
         .on("error", res.end);
 });
 
-app.listen(3000, () => {
+app.listen(serverPort, () => {
     console.log('Video portal up and running on port 3000!');
 });
