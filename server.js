@@ -7,7 +7,7 @@ const basicAuth = require('express-basic-auth');
 const username = process.env.USERNAME || 'admin';
 const password = process.env.PASSWORD || 'admin';
 const maxItemsOnPage = parseInt(process.env.MAX_ITEMS || '20');
-const mongoUrl = process.env.DB_URL || "mongodb://localhost:27017/video-portal";
+const mongoUrl = process.env.MONGO_URL || "mongodb://localhost:27017/video-portal";
 const serverPort = parseInt(process.env.PORT || 3000);
 const appName = process.env.APP_NAME || 'Video Portal';
 
