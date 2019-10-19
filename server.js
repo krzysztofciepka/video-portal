@@ -30,7 +30,8 @@ app.get('/',
     compression(),
     async (req, res) => {
         const page = req.query.page ? parseInt(req.query.page) : 1;
-        const videosCount = await app.locals.db.collection("videos").countDocuments();
+        const videosCount = await app.locals.db.collection("videos")
+            .countDocuments();
         const total = Math.ceil(videosCount / maxItemsOnPage);
 
         if (page > total) {
@@ -43,7 +44,14 @@ app.get('/',
             .skip(maxItemsOnPage * (page - 1))
             .limit(maxItemsOnPage)
             .toArray();
-        res.render('index', { header: appName, videos, current: page, total, prefix: "?page=" });
+
+        res.render('index', {
+            header: appName,
+            videos,
+            current: page,
+            total,
+            prefix: "?page="
+        });
     });
 
 app.get('/videos/:id',
@@ -60,9 +68,17 @@ app.get('/videos/:id',
             return res.sendStatus(404);
         }
 
-        const suggestions = await app.locals.db.collection("videos").aggregate([{ $sample: { size: 8 } }]).toArray();
+        const suggestions = await app.locals.db.collection("videos")
+            .aggregate([{ $sample: { size: 8 } }])
+            .toArray();
 
-        res.render('video', { header: appName, title: video.name, url: '/stream/' + video.id, suggestions, type: video.type });
+        res.render('video', {
+            header: appName,
+            title: video.name,
+            url: '/stream/' + video.id,
+            suggestions,
+            type: video.type
+        });
     });
 
 app.get('/stream/:id', async (req, res) => {
