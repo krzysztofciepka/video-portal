@@ -2,6 +2,10 @@ const express = require('express');
 const compression = require('compression');
 const MongoClient = require('mongodb').MongoClient;
 const fs = require('fs');
+const basicAuth = require('express-basic-auth');
+
+const username = process.env.USERNAME || 'admin';
+const password = process.env.PASSWORD || 'admin';
 
 const app = express();
 app.set('view engine', 'pug');
@@ -16,7 +20,10 @@ app.use(async (req, res, next) => {
     next();
 });
 
-app.get('/', compression(), async (req, res) => {
+app.get('/', basicAuth({
+    challenge: true,
+    users: { [username]: password }
+}), compression(), async (req, res) => {
     const page = req.query.page ? parseInt(req.query.page) : 1
     const videosCount = await app.locals.db.collection("videos").countDocuments();
     const total = Math.ceil(videosCount / 20)
@@ -34,7 +41,10 @@ app.get('/', compression(), async (req, res) => {
     res.render('index', { videos, current: page, total, prefix: "?page=" });
 });
 
-app.get('/videos/:id',compression(), async (req, res) => {
+app.get('/videos/:id', basicAuth({
+    challenge: true,
+    users: { [username]: password }
+}), compression(), async (req, res) => {
     const video = await app.locals.db.collection("videos")
         .findOne({ id: req.params.id });
 
