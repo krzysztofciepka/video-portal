@@ -5,6 +5,7 @@ const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 const uuid = require('uuid').v4
 const moment = require('moment');
+const extractFrames = require('ffmpeg-extract-frames')
 
 const dbUrl = process.env.MONGO_URL || "mongodb://localhost:27017/video-portal";
 const dir = process.env.CONTENT_DIR || "./content";
@@ -26,17 +27,45 @@ async function modelMapper(dir, filename) {
     console.log(filepath);
     console.log(metadata.format.duration);
 
-    if (!fs.existsSync(path.join(dir, '.thumbnails', filename + '_5.png'))) {
+    let thumbnails = [];
+
+    const takeScreenshot = async (percent, output, num) => {
         await new Promise((resolve, reject) => new ffmpeg(filepath)
             .takeScreenshots({
-                count: 5,
+                count: 1,
                 size: '320x240',
-                filename: '%f_%i',
-                timestamps: ['10%', '30%', '50%', '70%', '90%']
-            }, path.join(dir, '.thumbnails'))
+                filename: '%f_' + num,
+                timestamps: [percent]
+            }, output)
             .on('end', resolve)
-            .on('error', reject)
+            .on('error', (err) => {
+                console.log('ffmpeg: ' + err);
+                reject(err);
+            })
         );
+    }
+
+    if (!fs.existsSync(path.join(dir, '.thumbnails', filename + '_5.png'))) {
+        try {
+            await takeScreenshot('10%', path.join(dir, '.thumbnails'), 1)
+            await takeScreenshot('30%', path.join(dir, '.thumbnails'), 2)
+            await takeScreenshot('50%', path.join(dir, '.thumbnails'), 3)
+            await takeScreenshot('70%', path.join(dir, '.thumbnails'), 4)
+            await takeScreenshot('90%', path.join(dir, '.thumbnails'), 5)
+
+            thumbnails = [
+                'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_1.png'), 'base64'),
+                'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_2.png'), 'base64'),
+                'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_3.png'), 'base64'),
+                'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_4.png'), 'base64'),
+                'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_5.png'), 'base64'),
+            ]
+        }
+        catch (err) {
+            console.error(err)
+            console.error('Failed to generate thumbnail: ', filename)
+            thumbnails = []
+        }
     }
 
     return {
@@ -47,13 +76,7 @@ async function modelMapper(dir, filename) {
         created_at: new Date(),
         name: path.parse(filename).name,
         type: path.parse(filename).ext.slice(1),
-        thumbnails: [
-            'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_1.png'), 'base64'),
-            'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_2.png'), 'base64'),
-            'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_3.png'), 'base64'),
-            'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_4.png'), 'base64'),
-            'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_5.png'), 'base64'),
-        ]
+        thumbnails
     }
 }
 
