@@ -12,16 +12,16 @@ async function modelMapper(dir, filename) {
     const filepath = path.join(dir, filename);
     const stats = await fsPromises.stat(filepath);
 
-    if(!fs.existsSync(path.join(dir, '.thumbnails', filename + '_5.png'))){
+    if (!fs.existsSync(path.join(dir, '.thumbnails', filename + '_5.png'))) {
         await new Promise((resolve, reject) => new ffmpeg(filepath)
-        .takeScreenshots({
-            count: 5,
-            size: '320x240',
-            filename: '%f_%i',
-            timestamps: ['10%', '30%', '50%', '70%', '90%']
-        }, path.join(dir, '.thumbnails'))
-        .on('end', resolve)
-        .on('error', reject));
+            .takeScreenshots({
+                count: 5,
+                size: '320x240',
+                filename: '%f_%i',
+                timestamps: ['10%', '30%', '50%', '70%', '90%']
+            }, path.join(dir, '.thumbnails'))
+            .on('end', resolve)
+            .on('error', reject));
     }
 
     return {
@@ -45,14 +45,14 @@ async function toModels(dir, mapper) {
     const files = await fsPromises.readdir(dir);
     const entries = [];
     for (const f of files) {
-        try{
-            const stat = await fsPromises.stat(path.join(dir, f))
+        try {
+            const stat = await fsPromises.stat(path.join(dir, f));
             if (stat.isFile()) {
                 entries.push(await mapper(dir, f));
             }
         }
-        catch(err){
-            console.err('Mapping failed for file: ', f)
+        catch (err) {
+            console.err('Mapping failed for file: ', f);
         }
     }
 
@@ -60,16 +60,16 @@ async function toModels(dir, mapper) {
 }
 
 (async () => {
-    const db = await MongoClient.connect(dbUrl, { useUnifiedTopology: true })
+    const db = await MongoClient.connect(dbUrl, { useUnifiedTopology: true });
     const dbo = db.db('video-portal');
 
-    try{
+    try {
         await dbo.dropCollection('videos');
     }
-    catch(err){
-        console.error('Unable to drop videos table')
+    catch (err) {
+        console.error('Unable to drop videos table');
     }
-    
+
     const videos = await dbo.createCollection('videos');
 
     const models = await toModels(dir, modelMapper);
