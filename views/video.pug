@@ -12,4 +12,4 @@ html(lang="en")
     h2 See also
     div(class="video-container")
       each v in suggestions
-        +vid(v.name, '/videos/'+v.id, v.thumbnails)
+        +vid(v.name, '/videos/'+v.id, v.duration, v.thumbnails)

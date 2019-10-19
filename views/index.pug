@@ -7,6 +7,6 @@ html(lang="en")
       h1=header
     .video-container
       each v in videos
-        +vid(v.name, '/videos/'+v.id, v.thumbnails)
+        +vid(v.name, '/videos/'+v.id, v.duration, v.thumbnails)
     div(class="pagination-container")
       +pagination(current, total, prefix)

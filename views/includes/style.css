@@ -54,7 +54,7 @@ video {
   height: 240px;
 }
 
-.thumbnail p {
+.thumbnail p.title {
   position: absolute;
   top: 240px;
   left: 0;
@@ -109,6 +109,16 @@ video {
 .thumbnail:hover .image4 {
   opacity: 0;
   transition-delay: 3s;
+}
+
+.duration {
+  padding: 5px;
+  background-color: #1e1e1e;
+  position: absolute;
+  top: 185px;
+  left: 5px;
+  z-index: 100;
+  color: #cccccc;
 }
 
 /* Pagination styling */

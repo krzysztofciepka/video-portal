@@ -4,6 +4,7 @@ const fs = require('fs')
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 const uuid = require('uuid').v4
+const moment = require('moment');
 
 const dbUrl = process.env.MONGO_URL || "mongodb://localhost:27017/video-portal";
 const dir = process.env.CONTENT_DIR || "./content";
@@ -11,6 +12,19 @@ const dir = process.env.CONTENT_DIR || "./content";
 async function modelMapper(dir, filename) {
     const filepath = path.join(dir, filename);
     const stats = await fsPromises.stat(filepath);
+
+    const metadata = await new Promise((resolve, reject) => {
+        ffmpeg.ffprobe(filepath, function (err, metadata) {
+            if (err) {
+                return reject(err);
+            }
+
+            resolve(metadata);
+        });
+    });
+
+    console.log(filepath);
+    console.log(metadata.format.duration);
 
     if (!fs.existsSync(path.join(dir, '.thumbnails', filename + '_5.png'))) {
         await new Promise((resolve, reject) => new ffmpeg(filepath)
@@ -21,13 +35,15 @@ async function modelMapper(dir, filename) {
                 timestamps: ['10%', '30%', '50%', '70%', '90%']
             }, path.join(dir, '.thumbnails'))
             .on('end', resolve)
-            .on('error', reject));
+            .on('error', reject)
+        );
     }
 
     return {
         id: uuid(),
         size: stats.size,
         path: filepath,
+        duration: moment.utc(moment.duration(parseInt(metadata.format.duration), "seconds").asMilliseconds()).format("HH:mm:ss"),
         created_at: new Date(),
         name: path.parse(filename).name,
         type: path.parse(filename).ext.slice(1),
@@ -52,7 +68,7 @@ async function toModels(dir, mapper) {
             }
         }
         catch (err) {
-            console.err('Mapping failed for file: ', f);
+            console.error('Mapping failed for file: ', f);
         }
     }
 
