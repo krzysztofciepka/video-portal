@@ -108,7 +108,7 @@ async function modelMapper(dir, filename) {
     }
 }
 
-async function toModels(dir, mapper) {
+async function toModels(dbo, dir, mapper) {
     const files = await fsPromises.readdir(dir);
     const videos = await dbo.createCollection('videos');
     for (const f of files) {
@@ -135,7 +135,7 @@ async function toModels(dir, mapper) {
         console.error('Unable to drop videos table');
     }
 
-    await toModels(dir, modelMapper);
+    await toModels(dbo, dir, modelMapper);
     db.close();
 })()
 
