@@ -115,7 +115,7 @@ async function toModels(dbo, dir, mapper) {
         try {
             const stat = await fsPromises.stat(path.join(dir, f));
             if (stat.isFile()) {
-                await videos.insert(await mapper(dir, f));
+                await videos.insertOne(await mapper(dir, f));
             }
         }
         catch (err) {
