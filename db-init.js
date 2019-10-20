@@ -111,6 +111,7 @@ async function modelMapper(dir, filename) {
 async function toModels(dbo, dir, mapper) {
     const files = await fsPromises.readdir(dir);
     const videos = await dbo.createCollection('videos');
+    await videos.createIndex({ 'created_at': 1 });
     for (const f of files) {
         try {
             const stat = await fsPromises.stat(path.join(dir, f));
