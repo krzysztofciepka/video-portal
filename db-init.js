@@ -32,8 +32,9 @@ async function modelMapper(dir, filename) {
         const cmd = `ffmpegthumbnailer -i "${filepath.replace(/\n/g, '')}" -s 320 -t ${percent}% -o "${output}"`;
 
         const { stdout, stderr } = await exec(cmd);
-        console.log('stdout:', stdout);
-        console.log('stderr:', stderr);
+        if (stderr) {
+            console.log('stderr:', stderr);
+        }
     }
 
     if (!fs.existsSync(path.join(dir, '.thumbnails', filename + '_5.png'))) {
