@@ -5,7 +5,8 @@ const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 const uuid = require('uuid').v4
 const moment = require('moment');
-const extractFrames = require('ffmpeg-extract-frames')
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
 
 const dbUrl = process.env.MONGO_URL || "mongodb://localhost:27017/video-portal";
 const dir = process.env.CONTENT_DIR || "./content";
@@ -45,13 +46,27 @@ async function modelMapper(dir, filename) {
         );
     }
 
+    const execThumbnailer = async (percent, output) => {
+        const cmd = `ffmpegthumbnailer -i "${filepath.replace(/\n/g, '')}" -s 320 -t ${percent}% -o "${output}"`;
+
+        const { stdout, stderr } = await exec(cmd);
+        console.log('stdout:', stdout);
+        console.log('stderr:', stderr);
+    }
+
     if (!fs.existsSync(path.join(dir, '.thumbnails', filename + '_5.png'))) {
         try {
-            await takeScreenshot('10%', path.join(dir, '.thumbnails'), 1)
-            await takeScreenshot('30%', path.join(dir, '.thumbnails'), 2)
-            await takeScreenshot('50%', path.join(dir, '.thumbnails'), 3)
-            await takeScreenshot('70%', path.join(dir, '.thumbnails'), 4)
-            await takeScreenshot('90%', path.join(dir, '.thumbnails'), 5)
+            await execThumbnailer(10, path.join(dir, '.thumbnails', filename + '_1.png'))
+            await execThumbnailer(30, path.join(dir, '.thumbnails', filename + '_2.png'))
+            await execThumbnailer(50, path.join(dir, '.thumbnails', filename + '_3.png'))
+            await execThumbnailer(70, path.join(dir, '.thumbnails', filename + '_4.png'))
+            await execThumbnailer(90, path.join(dir, '.thumbnails', filename + '_5.png'))
+
+            // await takeScreenshot('10%', path.join(dir, '.thumbnails'), 1)
+            // await takeScreenshot('30%', path.join(dir, '.thumbnails'), 2)
+            // await takeScreenshot('50%', path.join(dir, '.thumbnails'), 3)
+            // await takeScreenshot('70%', path.join(dir, '.thumbnails'), 4)
+            // await takeScreenshot('90%', path.join(dir, '.thumbnails'), 5)
 
             thumbnails = [
                 'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_1.png'), 'base64'),
