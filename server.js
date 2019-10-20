@@ -48,6 +48,7 @@ app.get('/',
         res.render('index', {
             header: appName,
             videos,
+            title: appName,
             current: page,
             total,
             prefix: "?page="
