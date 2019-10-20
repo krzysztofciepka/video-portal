@@ -68,9 +68,15 @@ app.get('/videos/:id',
             return res.sendStatus(404);
         }
 
+        // const suggestions = await app.locals.db.collection("videos")
+        //     .aggregate([{ $sample: { size: 8 } }])
+        //     .toArray();
+
+        const videosCount = await app.locals.db.collection("videos")
+            .countDocuments();
+
         const suggestions = await app.locals.db.collection("videos")
-            .aggregate([{ $sample: { size: 8 } }])
-            .toArray();
+            .find().limit(-1).skip(parseInt(Math.random() * videosCount - 2).next())
 
         res.render('video', {
             header: appName,
