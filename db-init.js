@@ -110,20 +110,18 @@ async function modelMapper(dir, filename) {
 
 async function toModels(dir, mapper) {
     const files = await fsPromises.readdir(dir);
-    const entries = [];
+    const videos = await dbo.createCollection('videos');
     for (const f of files) {
         try {
             const stat = await fsPromises.stat(path.join(dir, f));
             if (stat.isFile()) {
-                entries.push(await mapper(dir, f));
+                videos.insert(await mapper(dir, f));
             }
         }
         catch (err) {
             console.error('Mapping failed for file: ', f);
         }
     }
-
-    return entries;
 }
 
 (async () => {
@@ -137,11 +135,7 @@ async function toModels(dir, mapper) {
         console.error('Unable to drop videos table');
     }
 
-    const videos = await dbo.createCollection('videos');
-
-    const models = await toModels(dir, modelMapper);
-    await videos.insertMany(models);
-
+    await toModels(dir, modelMapper);
     db.close();
 })()
 
