@@ -5,7 +5,7 @@ html(lang="en")
   body
     a(href="/", class="header")
       h1=header
-    video(width="640", height="480", controls, autoplay)
+    video(width="640", height="480", controls, autoplay, preload)
       source(src=url, type="video/" + type)
       p Your browser does not support the video tag.
     h3=title
