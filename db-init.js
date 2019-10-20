@@ -86,8 +86,26 @@ async function modelMapper(dir, filename) {
             }
         }
     }
+    else {
+        const thumbnails = [
+            'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_1.png'), 'base64'),
+            'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_2.png'), 'base64'),
+            'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_3.png'), 'base64'),
+            'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_4.png'), 'base64'),
+            'data:image/png;base64,' + await fsPromises.readFile(path.join(dir, '.thumbnails', filename + '_5.png'), 'base64'),
+        ]
 
-
+        return {
+            id: uuid(),
+            size: stats.size,
+            path: filepath,
+            duration: moment.utc(moment.duration(parseInt(metadata.format.duration), "seconds").asMilliseconds()).format("HH:mm:ss"),
+            created_at: new Date(),
+            name: path.parse(filename).name,
+            type: path.parse(filename).ext.slice(1),
+            thumbnails
+        }
+    }
 }
 
 async function toModels(dir, mapper) {
