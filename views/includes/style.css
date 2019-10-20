@@ -64,6 +64,8 @@ video {
 }
 
 .thumbnail img {
+  width: 320px;
+  height: 240px;
   position: absolute;
   top: 0px;
   left: 0px;
