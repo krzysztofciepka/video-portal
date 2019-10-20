@@ -76,7 +76,7 @@ app.get('/videos/:id',
             .countDocuments();
 
         const suggestions = await app.locals.db.collection("videos")
-            .find().limit(-1).skip(parseInt(Math.random() * videosCount - 2).next())
+            .find().limit(-1).skip(parseInt(Math.random() * videosCount) - 2).next()
 
         res.render('video', {
             header: appName,
