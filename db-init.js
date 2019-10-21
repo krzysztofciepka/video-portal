@@ -123,6 +123,7 @@ async function toModels(dbo, dir, mapper) {
         }
         catch (err) {
             console.error('Mapping failed for file: ', f);
+            console.error(err)
         }
     }
 }
