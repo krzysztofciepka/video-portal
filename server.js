@@ -22,70 +22,82 @@ app.use(async (req, res, next) => {
     next();
 });
 
+const videosHandler = async (req, res) => {
+    const page = req.query.page ? parseInt(req.query.page) : 1;
+
+    let query;
+    if(req.query.search){
+        query = {name: new RegExp(req.query.search)}
+    }
+    else {
+        query = {}
+    }
+
+    let sort;
+    switch(req.query.sort){
+        case 'newest':
+            sort = {created_at: -1}
+            break;
+        case 'longest':
+            sort = {duration: -1}
+            break;
+        default:
+            sort = {created_at: 1}
+    }
+
+    const videosCount = await app.locals.db.collection("videos")
+        .countDocuments(query);
+    const total = Math.ceil(videosCount / maxItemsOnPage);
+
+    if (page > total) {
+        return res.status(404).render('404', {header: appName});
+    }
+
+    const videos = await app.locals.db.collection("videos")
+        .find(query)
+        .sort(sort)
+        .skip(maxItemsOnPage * (page - 1))
+        .limit(maxItemsOnPage)
+        .toArray();
+
+    const params = []
+    if(req.query.search){
+        params.push('search=' + req.query.search)
+    }
+    if(req.query.sort){
+        params.push('sort=' + req.query.sort)
+    }
+
+    const prefix = '?' + params.join('&') + (params.length ? '&page=' : 'page=')
+
+    res.render('index', {
+        header: appName,
+        videos,
+        title: appName,
+        current: page,
+        total,
+        prefix,
+        sort: req.query.sort || 'oldest'
+    });
+}
+
+app.get('/videos',
+    basicAuth({
+        challenge: true,
+        users: { [username]: password }
+    }),
+    compression(),
+    videosHandler
+    );
+
 app.get('/',
     basicAuth({
         challenge: true,
         users: { [username]: password }
     }),
     compression(),
-    async (req, res) => {
-        const page = req.query.page ? parseInt(req.query.page) : 1;
-
-        let query;
-        if(req.query.search){
-            query = {name: new RegExp(req.query.search)}
-        }
-        else {
-            query = {}
-        }
-
-        let sort;
-        switch(req.query.sort){
-            case 'newest':
-                sort = {created_at: -1}
-                break;
-            case 'longest':
-                sort = {duration: -1}
-                break;
-            default:
-                sort = {created_at: 1}
-        }
-
-        const videosCount = await app.locals.db.collection("videos")
-            .countDocuments(query);
-        const total = Math.ceil(videosCount / maxItemsOnPage);
-
-        if (page > total) {
-            return res.status(404).render('404', {header: appName});
-        }
-
-        const videos = await app.locals.db.collection("videos")
-            .find(query)
-            .sort(sort)
-            .skip(maxItemsOnPage * (page - 1))
-            .limit(maxItemsOnPage)
-            .toArray();
-
-        const params = []
-        if(req.query.search){
-            params.push('search=' + req.query.search)
-        }
-        if(req.query.sort){
-            params.push('sort=' + req.query.sort)
-        }
-
-        const prefix = '?' + params.join('&') + (params.length ? '&page=' : 'page=')
-
-        res.render('index', {
-            header: appName,
-            videos,
-            title: appName,
-            current: page,
-            total,
-            prefix,
-            sort: req.query.sort || 'oldest'
-        });
-    });
+    videosHandler
+    );
 
 app.get('/videos/:id',
     basicAuth({
@@ -98,11 +110,12 @@ app.get('/videos/:id',
             .findOne({ id: req.params.id });
 
         if (!video) {
-            return res.sendStatus(404);
+            return res.status(404).render('404', {header: appName});
         }
 
         let suggestions = [];
         if(parseFloat(process.env.MONGO_VERSION || '0') < 3.6){
+            // fallback for older mongoDB servers
             const videosCount = await app.locals.db.collection("videos")
                 .countDocuments();
 
@@ -166,5 +179,5 @@ app.get('/stream/:id', async (req, res) => {
 });
 
 app.listen(serverPort, () => {
-    console.log('Video portal up and running on port 3000!');
+    console.log(`Video portal up and running on port ${serverPort}!`);
 });

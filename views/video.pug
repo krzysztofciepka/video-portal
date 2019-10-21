@@ -3,8 +3,10 @@ html(lang="en")
   include includes/header.pug
   include includes/mixins.pug
   body
-    a(href="/", class="header")
-      h1=header
+    div(class="header")
+      a(href="/")
+        h1=header
+      +search
     video(width="640", height="480", controls, autoplay, preload)
       source(src=url, type="video/" + type)
       p Your browser does not support the video tag.

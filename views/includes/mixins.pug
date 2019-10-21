@@ -21,7 +21,7 @@ mixin sort(selectedSort)
         option(value='oldest', selected='selected')='Oldest'     
 
 mixin search()
-  form#search(class="search", onsubmit="return false;")
+  form#search(class="search")
     input(type="text", placeholder=' Search', name="search")
 
 mixin vid(title, link, duration, thumbnails)
