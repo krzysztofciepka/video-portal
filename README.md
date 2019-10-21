@@ -4,6 +4,25 @@
 
 Simple portal for video files sharing
 
+![alt text](portal.png "Portal screenshot")
+
+
+Supports:
+
+* video preview on mouse hover
+
+* video playback
+
+* suggestions (random selection of other videos)
+
+* pagination
+
+* search (by name)
+
+* sorting
+
+* integrated tool for database initialization from existing     video content
+
 ## Requirements
 
 
