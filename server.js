@@ -1,6 +1,6 @@
 const express = require('express');
 const compression = require('compression');
-const MongoClient = require('mongodb').MongoClient;
+const MongoClient = require('./mongo-db-client').MongoClient;
 const fs = require('fs');
 const basicAuth = require('express-basic-auth');
 
@@ -16,9 +16,8 @@ app.set('view engine', 'pug');
 app.set('views', './views');
 
 app.use(async (req, res, next) => {
-    const db = await MongoClient.connect(mongoUrl, { useUnifiedTopology: true });
-    const dbo = await db.db('video-portal');
-    app.locals.db = dbo;
+    app.locals.db = new MongoClient(mongoUrl, 'video-portal');
+    app.locals.db.connect();
     next();
 });
 
@@ -27,7 +26,9 @@ const videosHandler = async (req, res) => {
 
     let query;
     if (req.query.search) {
-        query = { name: new RegExp(req.query.search, 'i') }
+        query = {
+            name: new RegExp(req.query.search, 'i')
+        }
     }
     else {
         query = {}
@@ -45,20 +46,14 @@ const videosHandler = async (req, res) => {
             sort = { created_at: 1 }
     }
 
-    const videosCount = await app.locals.db.collection("videos")
-        .countDocuments(query);
+    const videosCount = await app.locals.db.count('videos');
     const total = Math.ceil(videosCount / maxItemsOnPage);
 
     if (page > total) {
         return res.status(404).render('404', { header: appName });
     }
 
-    const videos = await app.locals.db.collection("videos")
-        .find(query)
-        .sort(sort)
-        .skip(maxItemsOnPage * (page - 1))
-        .limit(maxItemsOnPage)
-        .toArray();
+    const videos = await app.locals.db.select("videos", query, sort, maxItemsOnPage * (page - 1), limit);
 
     const params = []
     if (req.query.search) {
@@ -106,35 +101,13 @@ app.get('/videos/:id',
     }),
     compression(),
     async (req, res) => {
-        const video = await app.locals.db.collection("videos")
-            .findOne({ id: req.params.id });
+        const video = await app.locals.db.selectOne("videos", { id: req.params.id });
 
         if (!video) {
             return res.status(404).render('404', { header: appName });
         }
 
-        let suggestions = [];
-        if (parseFloat(process.env.MONGO_VERSION || '0') < 3.6) {
-            // fallback for older mongoDB servers
-            const videosCount = await app.locals.db.collection("videos")
-                .countDocuments();
-
-            if (videosCount < 9) {
-                suggestions = await app.locals.db.collection("videos")
-                    .find().toArray();
-            }
-            else {
-                let randomDoc = parseInt(Math.random() * videosCount) - 10;
-
-                suggestions = await app.locals.db.collection("videos")
-                    .find().limit(8).skip(randomDoc < 0 ? 0 : randomDoc).toArray()
-            }
-        }
-        else {
-            suggestions = await app.locals.db.collection("videos")
-                .aggregate([{ $sample: { size: 8 } }])
-                .toArray();
-        }
+        let suggestions = await app.locals.db.selectRandom('videos', 8);
 
         res.render('video', {
             header: appName,
@@ -146,8 +119,7 @@ app.get('/videos/:id',
     });
 
 app.get('/stream/:id', async (req, res) => {
-    const video = await app.locals.db.collection("videos")
-        .findOne({ id: req.params.id });
+    const video = await app.locals.db.selectOne("videos", { id: req.params.id });
 
     if (!video) {
         return res.sendStatus(404);
