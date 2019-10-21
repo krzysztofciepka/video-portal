@@ -4,6 +4,17 @@ mixin header
   style
     include style.css
 
+mixin sort()
+  div(class="sorting")
+    select
+      option='Longest'
+      option='Newest'
+      option='Oldest'
+
+mixin search()
+  form#search(class="search", onsubmit="return false;")
+    input(type="text", placeholder=' Search', name="search")
+    
 mixin vid(title, link, duration, thumbnails)
   div(class="thumbnail")
     a(href=link)

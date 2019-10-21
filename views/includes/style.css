@@ -4,6 +4,39 @@ body {
   color: #cccccc;
 }
 
+.sorting select{
+  font-family: "Open Sans", sans-serif;
+  background-color: #252526;
+  color: #cccccc;
+  outline: none;
+  width: 200px;
+  height: 2em;
+  font-size: 1em;
+}
+
+.search input {
+  font-family: "Open Sans", sans-serif;
+  background-color: #252526;
+  color: #cccccc;
+  outline: none;
+  width: 200px;
+  height: 2em;
+}
+
+video {
+  width: 100%;
+}
+
+.header{
+  color: #cccccc;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-right: 20%;
+}
+
+
 .video-container {
   margin: 0 auto;
   display: grid;
@@ -29,16 +62,6 @@ body {
   .video-container {
      grid-template-columns: repeat(1, 1fr);
   }
-}
-
-video {
-  width: 100%;
-}
-
-.header{
-  color: #cccccc;
-  text-decoration: none;
-  display: flex;
 }
 
 /* Video preview styling */

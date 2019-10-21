@@ -5,8 +5,13 @@ html(lang="en")
   body
     a(href="/", class="header")
       h1=header
+      +search
+      +sort
     .video-container
       each v in videos
         +vid(v.name, '/videos/'+v.id, v.duration, v.thumbnails)
     div(class="pagination-container")
       +pagination(current, total, prefix)
+    
+    script
+      include includes/site.js
