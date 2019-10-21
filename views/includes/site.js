@@ -10,7 +10,7 @@ window.addEventListener('load', () => {
   }
 
   //handle sorting selection
-  if(document.getElementsById('sort')){
+  if(document.getElementById('sort')){
     document.getElementById('sort').addEventListener('change', (e) => {
       e.preventDefault(); 
       window.location.href='?sort=' + e.target.value
