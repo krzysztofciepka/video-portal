@@ -4,7 +4,11 @@
 
 Simple portal for video files sharing
 
-![alt text](portal.png "Portal screenshot")
+![alt text](images/portal.png "Portal screenshot")
+
+![alt text](images/portal2.png "Portal screenshot")
+
+![alt text](images/portal3.png "Portal screenshot")
 
 
 Supports:
