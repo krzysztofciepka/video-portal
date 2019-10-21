@@ -26,6 +26,7 @@ body {
   outline: none;
   width: 200px;
   height: 2em;
+  font-size: 1em;
   border: 1px solid #ddd;
 }
 
