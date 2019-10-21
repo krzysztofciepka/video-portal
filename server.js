@@ -69,15 +69,27 @@ app.get('/videos/:id',
             return res.sendStatus(404);
         }
 
-        // const suggestions = await app.locals.db.collection("videos")
-        //     .aggregate([{ $sample: { size: 8 } }])
-        //     .toArray();
+        let suggestions = [];
+        if(parseFloat(process.env.MONGO_VERSION || '0') < 3.6){
+            const videosCount = await app.locals.db.collection("videos")
+                .countDocuments();
 
-        const videosCount = await app.locals.db.collection("videos")
-            .countDocuments();
+            if(videosCount < 9){
+                suggestions = await app.locals.db.collection("videos")
+                .find().toArray();
+            }
+            else{
+                let randomDoc = parseInt(Math.random() * videosCount) - 10;
 
-        const suggestions = await app.locals.db.collection("videos")
-            .find().limit(8).skip(parseInt(Math.random() * videosCount) - 10).toArray()
+                suggestions = await app.locals.db.collection("videos")
+                .find().limit(8).skip(randomDoc < 0 ? 0 : randomDoc).toArray()
+            }
+        }
+        else{
+            suggestions = await app.locals.db.collection("videos")
+                .aggregate([{ $sample: { size: 8 } }])
+                .toArray();
+        }
 
         res.render('video', {
             header: appName,
