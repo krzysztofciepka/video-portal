@@ -26,23 +26,23 @@ const videosHandler = async (req, res) => {
     const page = req.query.page ? parseInt(req.query.page) : 1;
 
     let query;
-    if(req.query.search){
-        query = {name: new RegExp(req.query.search)}
+    if (req.query.search) {
+        query = { name: new RegExp(req.query.search, 'i') }
     }
     else {
         query = {}
     }
 
     let sort;
-    switch(req.query.sort){
+    switch (req.query.sort) {
         case 'newest':
-            sort = {created_at: -1}
+            sort = { created_at: -1 }
             break;
         case 'longest':
-            sort = {duration: -1}
+            sort = { duration: -1 }
             break;
         default:
-            sort = {created_at: 1}
+            sort = { created_at: 1 }
     }
 
     const videosCount = await app.locals.db.collection("videos")
@@ -50,7 +50,7 @@ const videosHandler = async (req, res) => {
     const total = Math.ceil(videosCount / maxItemsOnPage);
 
     if (page > total) {
-        return res.status(404).render('404', {header: appName});
+        return res.status(404).render('404', { header: appName });
     }
 
     const videos = await app.locals.db.collection("videos")
@@ -61,10 +61,10 @@ const videosHandler = async (req, res) => {
         .toArray();
 
     const params = []
-    if(req.query.search){
+    if (req.query.search) {
         params.push('search=' + req.query.search)
     }
-    if(req.query.sort){
+    if (req.query.sort) {
         params.push('sort=' + req.query.sort)
     }
 
@@ -88,7 +88,7 @@ app.get('/videos',
     }),
     compression(),
     videosHandler
-    );
+);
 
 app.get('/',
     basicAuth({
@@ -97,7 +97,7 @@ app.get('/',
     }),
     compression(),
     videosHandler
-    );
+);
 
 app.get('/videos/:id',
     basicAuth({
@@ -110,27 +110,27 @@ app.get('/videos/:id',
             .findOne({ id: req.params.id });
 
         if (!video) {
-            return res.status(404).render('404', {header: appName});
+            return res.status(404).render('404', { header: appName });
         }
 
         let suggestions = [];
-        if(parseFloat(process.env.MONGO_VERSION || '0') < 3.6){
+        if (parseFloat(process.env.MONGO_VERSION || '0') < 3.6) {
             // fallback for older mongoDB servers
             const videosCount = await app.locals.db.collection("videos")
                 .countDocuments();
 
-            if(videosCount < 9){
+            if (videosCount < 9) {
                 suggestions = await app.locals.db.collection("videos")
-                .find().toArray();
+                    .find().toArray();
             }
-            else{
+            else {
                 let randomDoc = parseInt(Math.random() * videosCount) - 10;
 
                 suggestions = await app.locals.db.collection("videos")
-                .find().limit(8).skip(randomDoc < 0 ? 0 : randomDoc).toArray()
+                    .find().limit(8).skip(randomDoc < 0 ? 0 : randomDoc).toArray()
             }
         }
-        else{
+        else {
             suggestions = await app.locals.db.collection("videos")
                 .aggregate([{ $sample: { size: 8 } }])
                 .toArray();
