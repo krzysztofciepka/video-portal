@@ -39,6 +39,18 @@ app.get('/',
             query = {}
         }
 
+        let sort;
+        switch(req.query.sort){
+            case 'newest':
+                sort = {created_at: -1}
+                break;
+            case 'longest':
+                sort = {duration: -1}
+                break;
+            default:
+                sort = {created_at: 1}
+        }
+
         const videosCount = await app.locals.db.collection("videos")
             .countDocuments(query);
         const total = Math.ceil(videosCount / maxItemsOnPage);
@@ -49,7 +61,7 @@ app.get('/',
 
         const videos = await app.locals.db.collection("videos")
             .find(query)
-            .sort({ created_at: 1 })
+            .sort(sort)
             .skip(maxItemsOnPage * (page - 1))
             .limit(maxItemsOnPage)
             .toArray();
