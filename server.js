@@ -30,8 +30,17 @@ app.get('/',
     compression(),
     async (req, res) => {
         const page = req.query.page ? parseInt(req.query.page) : 1;
+
+        let query;
+        if(req.query.search){
+            query = {name: new RegExp(req.query.search)}
+        }
+        else {
+            query = {}
+        }
+
         const videosCount = await app.locals.db.collection("videos")
-            .countDocuments();
+            .countDocuments(query);
         const total = Math.ceil(videosCount / maxItemsOnPage);
 
         if (page > total) {
@@ -39,7 +48,7 @@ app.get('/',
         }
 
         const videos = await app.locals.db.collection("videos")
-            .find({})
+            .find(query)
             .sort({ created_at: 1 })
             .skip(maxItemsOnPage * (page - 1))
             .limit(maxItemsOnPage)
