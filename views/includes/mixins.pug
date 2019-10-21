@@ -4,17 +4,26 @@ mixin header
   style
     include style.css
 
-mixin sort()
-  div(class="sorting")
-    select
-      option='Longest'
-      option='Newest'
-      option='Oldest'
+mixin sort(selectedSort)
+  div#sort(class="sorting")
+    select(name="sort")
+      if selectedSort === 'longest'
+        option(value='longest', selected='selected')='Longest'
+        option(value='newest')='Newest'
+        option(value='oldest')='Oldest'
+      else if selectedSort === 'newest'
+        option(value='longest')='Longest'
+        option(value='newest', selected='selected')='Newest'
+        option(value='oldest')='Oldest'
+      else
+        option(value='longest')='Longest'
+        option(value='newest')='Newest'
+        option(value='oldest', selected='selected')='Oldest'     
 
 mixin search()
   form#search(class="search", onsubmit="return false;")
     input(type="text", placeholder=' Search', name="search")
-    
+
 mixin vid(title, link, duration, thumbnails)
   div(class="thumbnail")
     a(href=link)

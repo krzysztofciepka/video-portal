@@ -2,17 +2,15 @@ doctype html
 html(lang="en")
   include includes/header.pug
   include includes/mixins.pug
+
   body
     div(class="header")
       a(href="/")
         h1=header
       +search
       +sort(sort)
-    .video-container
-      each v in videos
-        +vid(v.name, '/videos/'+v.id, v.duration, v.thumbnails)
-    div(class="pagination-container")
-      +pagination(current, total, prefix)
+
+    h2.error='Not Found'
     
     script
       include includes/site.js

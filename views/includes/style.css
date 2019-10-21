@@ -4,6 +4,10 @@ body {
   color: #cccccc;
 }
 
+.error {
+  text-align: center;
+}
+
 .sorting select{
   font-family: "Open Sans", sans-serif;
   background-color: #252526;
@@ -12,6 +16,7 @@ body {
   width: 200px;
   height: 2em;
   font-size: 1em;
+  border: 1px solid #ddd;
 }
 
 .search input {
@@ -21,6 +26,7 @@ body {
   outline: none;
   width: 200px;
   height: 2em;
+  border: 1px solid #ddd;
 }
 
 video {
@@ -29,11 +35,15 @@ video {
 
 .header{
   color: #cccccc;
-  text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-right: 20%;
+}
+
+.header a {
+  color: #cccccc;
+  text-decoration: none;
 }
 
 

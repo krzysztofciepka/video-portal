@@ -56,7 +56,7 @@ app.get('/',
         const total = Math.ceil(videosCount / maxItemsOnPage);
 
         if (page > total) {
-            return res.sendStatus(404);
+            return res.status(404).render('404', {header: appName});
         }
 
         const videos = await app.locals.db.collection("videos")
@@ -66,13 +66,24 @@ app.get('/',
             .limit(maxItemsOnPage)
             .toArray();
 
+        const params = []
+        if(req.query.search){
+            params.push('search=' + req.query.search)
+        }
+        if(req.query.sort){
+            params.push('sort=' + req.query.sort)
+        }
+
+        const prefix = '?' + params.join('&') + (params.length ? '&page=' : 'page=')
+
         res.render('index', {
             header: appName,
             videos,
             title: appName,
             current: page,
             total,
-            prefix: "?page="
+            prefix,
+            sort: req.query.sort || 'oldest'
         });
     });
 
