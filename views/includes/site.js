@@ -1,6 +1,6 @@
 window.addEventListener('load', () => {
   // handle search field
-  if(document.getElementsById('search')){
+  if(document.getElementById('search')){
     document.getElementById('search').addEventListener('keyup', (e) => {
       e.preventDefault(); 
       if ((e.keyCode == 13))  {
