@@ -27,6 +27,8 @@ Supports:
 
 * integrated tool for database initialization from existing     video content
 
+* Multiple database options for metadata storage, currently MongoDB and SQLite
+
 ## Requirements
 
 
@@ -58,7 +60,11 @@ Set env variables:
 
 `MAX_ITEMS` - max number of video thumbnails on single page
 
-`MONGO_URL` - MongoDB url
+`DB_ENGINE` - Selected DB to use (mongo or sqlite)
+
+`MONGO_URL` - MongoDB url (valid for DB_ENGINE=mongo)
+
+`SQLITE_DB_PATH` - Path to SQLite database file (valid for DB_ENGINE=sqlite)
 
 `PORT` - http server port
 
