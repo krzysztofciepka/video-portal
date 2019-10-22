@@ -57,7 +57,7 @@ class SqliteDbClient {
             thumbnails) 
             VALUES(
             '${item.id}',
-            '${item.name}',
+            "${item.name}",
             ${item.size},
             '${item.path}',
             '${item.duration}',
