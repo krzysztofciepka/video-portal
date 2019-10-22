@@ -59,7 +59,7 @@ class SqliteDbClient {
             '${item.id}',
             "${item.name}",
             ${item.size},
-            '${item.path}',
+            "${item.path}",
             '${item.duration}',
             '${new Date(item.created_at).toISOString()}',
             '${item.type}',
