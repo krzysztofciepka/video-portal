@@ -1,4 +1,5 @@
-const MongoClient = require('mongodb').MongoClient;
+const MongoDbClient = require('./mongo-db-client');
+const SqliteDbClient = require('./sqlite-db-client');
 const fsPromises = require('fs').promises;
 const fs = require('fs')
 const path = require('path');
@@ -9,7 +10,9 @@ const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
 const dbUrl = process.env.MONGO_URL || "mongodb://localhost:27017/video-portal";
+const dbPath = process.env.SQLITE_DB_PATH || 'videos.db';
 const dir = process.env.CONTENT_DIR || "./content";
+const selectedDb = process.env.DB_ENGINE || 'sqlite' // 'mongo' or 'sqlite'
 
 async function modelMapper(dir, filename) {
     const filepath = path.join(dir, filename);
@@ -26,7 +29,6 @@ async function modelMapper(dir, filename) {
     });
 
     console.log(filepath);
-    console.log(metadata.format.duration);
 
     const execThumbnailer = async (percent, output) => {
         const cmd = `ffmpegthumbnailer -i "${filepath.replace(/\n/g, '')}" -s 320 -t ${percent}% -o "${output}"`;
@@ -108,17 +110,15 @@ async function modelMapper(dir, filename) {
     }
 }
 
-async function toModels(dbo, dir, mapper) {
+async function toModels(dbClient, dir, mapper) {
     const files = await fsPromises.readdir(dir);
-    const videos = await dbo.createCollection('videos');
-    await videos.createIndex({ 'created_at': 1 });
-    await videos.createIndex({ 'created_at': -1 });
-    await videos.createIndex({ 'duration': -1 });
+    await dbClient.createTable();
+
     for (const f of files) {
         try {
             const stat = await fsPromises.stat(path.join(dir, f));
             if (stat.isFile()) {
-                await videos.insertOne(await mapper(dir, f));
+                await dbClient.insertOne(await mapper(dir, f));
             }
         }
         catch (err) {
@@ -129,17 +129,24 @@ async function toModels(dbo, dir, mapper) {
 }
 
 (async () => {
-    const db = await MongoClient.connect(dbUrl, { useUnifiedTopology: true });
-    const dbo = db.db('video-portal');
+    let dbClient;
+    if(selectedDb === 'mongo'){
+        dbClient = new MongoDbClient(dbUrl, 'video-portal')
+    }
+    else {
+        dbClient = new SqliteDbClient(dbPath);
+    }
+
+    await dbClient.connect();
 
     try {
-        await dbo.dropCollection('videos');
+        await dbClient.dropTable();
     }
     catch (err) {
         console.error('Unable to drop videos table');
     }
 
-    await toModels(dbo, dir, modelMapper);
-    db.close();
+    await toModels(dbClient, dir, modelMapper);
+    await dbClient.close();
 })()
 

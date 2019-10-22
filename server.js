@@ -1,6 +1,7 @@
 const express = require('express');
 const compression = require('compression');
-const MongoClient = require('./mongo-db-client').MongoClient;
+const MongoDbClient = require('./mongo-db-client');
+const SqliteDbClient = require('./sqlite-db-client');
 const fs = require('fs');
 const basicAuth = require('express-basic-auth');
 
@@ -8,6 +9,8 @@ const username = process.env.USERNAME || 'admin';
 const password = process.env.PASSWORD || 'admin';
 const maxItemsOnPage = parseInt(process.env.MAX_ITEMS || '20');
 const mongoUrl = process.env.MONGO_URL || "mongodb://localhost:27017/video-portal";
+const dbPath = process.env.SQLITE_DB_PATH || 'videos.db';
+const selectedDb = process.env.DB_ENGINE || 'sqlite' // 'sqlite' or 'mongo'
 const serverPort = parseInt(process.env.PORT || 3000);
 const appName = process.env.APP_NAME || 'Video Portal';
 
@@ -16,8 +19,15 @@ app.set('view engine', 'pug');
 app.set('views', './views');
 
 app.use(async (req, res, next) => {
-    app.locals.db = new MongoClient(mongoUrl, 'video-portal');
-    app.locals.db.connect();
+    if(selectedDb === 'mongo'){
+        app.locals.db = new MongoDbClient(mongoUrl, 'video-portal');
+    }
+    else {
+        app.locals.db = new SqliteDbClient(dbPath);
+    }
+
+    
+    await app.locals.db.connect();
     next();
 });
 
@@ -46,14 +56,14 @@ const videosHandler = async (req, res) => {
             sort = { created_at: 1 }
     }
 
-    const videosCount = await app.locals.db.count('videos');
+    const videosCount = await app.locals.db.count();
     const total = Math.ceil(videosCount / maxItemsOnPage);
 
     if (page > total) {
         return res.status(404).render('404', { header: appName });
     }
 
-    const videos = await app.locals.db.select("videos", query, sort, maxItemsOnPage * (page - 1), limit);
+    const videos = await app.locals.db.select(query, sort, maxItemsOnPage * (page - 1), maxItemsOnPage);
 
     const params = []
     if (req.query.search) {
@@ -101,13 +111,13 @@ app.get('/videos/:id',
     }),
     compression(),
     async (req, res) => {
-        const video = await app.locals.db.selectOne("videos", { id: req.params.id });
+        const video = await app.locals.db.selectById(req.params.id);
 
         if (!video) {
             return res.status(404).render('404', { header: appName });
         }
 
-        let suggestions = await app.locals.db.selectRandom('videos', 8);
+        let suggestions = await app.locals.db.selectRandom(8);
 
         res.render('video', {
             header: appName,
@@ -119,7 +129,7 @@ app.get('/videos/:id',
     });
 
 app.get('/stream/:id', async (req, res) => {
-    const video = await app.locals.db.selectOne("videos", { id: req.params.id });
+    const video = await app.locals.db.selectById(req.params.id);
 
     if (!video) {
         return res.sendStatus(404);

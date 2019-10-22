@@ -8,57 +8,64 @@ class MongoDbClient {
 
     async connect() {
         this.db = await MongoClient.connect(this.dbUrl);
-        this.dbo = db.db(this.dbName);
+        this.dbo = this.db.db(this.dbName);
     }
 
-    async insertOne(tableName, item) {
-        await this.dbo.collection(tableName).insertOne(item);
+    async count() {
+        return await this.dbo.collection('videos')
+            .countDocuments();
     }
 
-    async select(tableName, query, sort, offset, limit) {
-        return await this.dbo.collection(tableName)
+    async createTable() {
+        const videos = await this.dbo.createCollection('videos');
+        await videos.createIndex({ 'created_at': 1 });
+        await videos.createIndex({ 'created_at': -1 });
+        await videos.createIndex({ 'duration': -1 });
+    }
+
+    async dropTable() {
+        await dbo.dropCollection('videos');
+    }
+
+    async insertOne(item) {
+        await this.dbo.collection('videos').insertOne(item);
+    }
+
+    async selectById(id) {
+        return await this.dbo.collection('videos')
+            .findOne({id});
+    }
+
+    async select(query, sort, offset, limit) {
+        return await this.dbo.collection('videos')
             .find(query)
             .sort(sort)
             .skip(offset)
             .limit(limit)
             .toArray();
     }
-
-    async count(tableName) {
-        return await this.dbo.collection(tableName)
-            .countDocuments();
-    }
-
-    async selectOne(tableName, query) {
-        return await this.dbo.collection(tableName)
-            .findOne(query);
-    }
-
-    async selectRandom(tableName, count) {
+    
+    async selectRandom(count) {
         if (parseFloat(process.env.MONGO_VERSION || '0') < 3.6) {
-            const itemsCount = await this.dbo.collection(tableName)
+            const itemsCount = await this.dbo.collection('videos')
                 .countDocuments();
 
             let randomItem = parseInt(Math.random() * itemsCount) - count;
 
-            return await this.dbo.collection(tableName)
+            return await this.dbo.collection('videos')
                 .find()
                 .limit(count)
                 .skip(randomItem < 0 ? 0 : randomItem)
                 .toArray()
         }
 
-        return await app.locals.db.collection(tableName)
+        return await app.locals.db.collection('videos')
             .aggregate([{ $sample: { size: count } }])
             .toArray();
     }
 
-    async createTable(tableName) {
-        await dbo.createCollection(tableName);
-    }
-
-    async dropTable(tableName) {
-        await dbo.dropCollection(tableName);
+    async close(){
+        await this.db.close();
     }
 }
 
