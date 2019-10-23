@@ -124,7 +124,14 @@ async function toModels(dbClient, dir, mapper) {
             console.log(`(${i}/${files.length})`)
             const stat = await fsPromises.stat(path.join(dir, f));
             if (stat.isFile()) {
-                await dbClient.insertOne(await mapper(dir, f));
+                const exist = await dbClient.select({ name: path.parse(f).name }, { id: 1 }, 0, 1);
+                if (!exist || !exist.length) {
+                    await dbClient.insertOne(await mapper(dir, f));
+                }
+                else {
+                    console.log('Entry exist. Skip');
+                }
+
             }
         }
         catch (err) {
@@ -135,6 +142,8 @@ async function toModels(dbClient, dir, mapper) {
 }
 
 (async () => {
+
+    const argv = require('minimist')(process.argv.slice(2));
     let dbClient;
     if (selectedDb === 'mongo') {
         dbClient = new MongoDbClient(dbUrl, 'video-portal')
@@ -145,12 +154,15 @@ async function toModels(dbClient, dir, mapper) {
 
     await dbClient.connect();
 
-    try {
-        await dbClient.dropTable();
+    if (argv['delete'] === 'force') {
+        try {
+            await dbClient.dropTable();
+        }
+        catch (err) {
+            console.error('Unable to drop videos table');
+        }
     }
-    catch (err) {
-        console.error('Unable to drop videos table');
-    }
+
 
     await toModels(dbClient, dir, modelMapper);
     await dbClient.close();
