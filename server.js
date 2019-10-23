@@ -56,7 +56,7 @@ const videosHandler = async (req, res) => {
             sort = { created_at: 1 }
     }
 
-    const videosCount = await app.locals.db.count();
+    const videosCount = await app.locals.db.count(query);
     const total = Math.ceil(videosCount / maxItemsOnPage);
 
     if (page > total) {

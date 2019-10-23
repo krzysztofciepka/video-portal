@@ -11,9 +11,9 @@ class MongoDbClient {
         this.dbo = this.db.db(this.dbName);
     }
 
-    async count() {
+    async count(query) {
         return await this.dbo.collection('videos')
-            .countDocuments();
+            .countDocuments(query);
     }
 
     async createTable() {
@@ -33,7 +33,7 @@ class MongoDbClient {
 
     async selectById(id) {
         return await this.dbo.collection('videos')
-            .findOne({id});
+            .findOne({ id });
     }
 
     async select(query, sort, offset, limit) {
@@ -44,7 +44,7 @@ class MongoDbClient {
             .limit(limit)
             .toArray();
     }
-    
+
     async selectRandom(count) {
         if (parseFloat(process.env.MONGO_VERSION || '0') < 3.6) {
             const itemsCount = await this.dbo.collection('videos')
@@ -64,7 +64,7 @@ class MongoDbClient {
             .toArray();
     }
 
-    async close(){
+    async close() {
         await this.db.close();
     }
 }

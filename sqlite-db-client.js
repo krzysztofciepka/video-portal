@@ -16,9 +16,15 @@ class SqliteDbClient {
         });
     }
 
-    async count() {
+    async count(query) {
         return new Promise((resolve, reject) => {
-            this.db.all('SELECT COUNT(*) FROM videos', (err, rows) => {
+            const keys = Object.keys(query)
+            let sql = 'SELECT COUNT(*) FROM videos'
+            if (keys && keys.length) {
+                let key = keys[0];
+                sql = `SELECT COUNT(*) FROM videos WHERE ${key} LIKE '%${query[key].toString().replace('/i', '').replace('/', '')}%'`
+            }
+            this.db.all(sql, (err, rows) => {
                 if (err) {
                     return reject(err)
                 }
