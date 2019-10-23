@@ -88,8 +88,11 @@ class SqliteDbClient {
         const sortOrder = sort[sortKey] === 1 ? 'ASC' : 'DESC';
 
         return new Promise((resolve, reject) => {
+            console.log(`SELECT * FROM videos ${key ? `WHERE ${key} = '${query[key]}' ` : `WHERE id > ${offset} `}  
+        ORDER BY ${sortKey} ${sortOrder} 
+        LIMIT ${limit}`)
             this.db.all(
-                `SELECT * FROM videos ${key ? `WHERE ${key} = '${query[key]}' ` : `WHERE id > ${offset * limit} `}  
+                `SELECT * FROM videos ${key ? `WHERE ${key} = '${query[key]}' ` : `WHERE id > ${offset} `}  
                     ORDER BY ${sortKey} ${sortOrder} 
                     LIMIT ${limit}`, (err, rows) => {
                     if (err) {
