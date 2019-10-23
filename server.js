@@ -19,14 +19,14 @@ app.set('view engine', 'pug');
 app.set('views', './views');
 
 app.use(async (req, res, next) => {
-    if(selectedDb === 'mongo'){
+    if (selectedDb === 'mongo') {
         app.locals.db = new MongoDbClient(mongoUrl, 'video-portal');
     }
     else {
         app.locals.db = new SqliteDbClient(dbPath);
     }
 
-    
+
     await app.locals.db.connect();
     next();
 });
@@ -63,7 +63,12 @@ const videosHandler = async (req, res) => {
         return res.status(404).render('404', { header: appName });
     }
 
-    const videos = await app.locals.db.select(query, sort, maxItemsOnPage * (page - 1), maxItemsOnPage);
+    const videos = await app.locals.db.select(
+        query,
+        sort,
+        maxItemsOnPage * (page - 1),
+        maxItemsOnPage
+    );
 
     const params = []
     if (req.query.search) {
