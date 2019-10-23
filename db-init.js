@@ -117,8 +117,11 @@ async function toModels(dbClient, dir, mapper) {
     const files = await fsPromises.readdir(dir);
     await dbClient.createTable();
 
+    let i = 0;
     for (const f of files) {
+        i++
         try {
+            console.log(`(${i}/${files.length})`)
             const stat = await fsPromises.stat(path.join(dir, f));
             if (stat.isFile()) {
                 await dbClient.insertOne(await mapper(dir, f));
