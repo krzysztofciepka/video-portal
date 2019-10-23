@@ -92,12 +92,20 @@ class SqliteDbClient {
             sortKey = "duration_raw"
         }
 
+        let sql = `SELECT * FROM videos WHERE ${sortKey} NOT IN 
+        ( SELECT ${sortKey} FROM videos ORDER BY ${sortKey} 
+            ${sortOrder} LIMIT ${offset} ) 
+        ORDER BY ${sortKey} ${sortOrder} LIMIT ${limit}`
+
+        const keys = Object.keys(query)
+        if (keys && keys.length) {
+            let key = keys[0];
+            sql = `SELECT * FROM videos WHERE ${key} LIKE '%${query[key].toString().replace('/i', '').replace('/', '')}%' LIMIT ${limit} OFFSET ${offset}`
+        }
+
         return new Promise((resolve, reject) => {
             this.db.all(
-                `SELECT * FROM videos WHERE ${sortKey} NOT IN 
-                ( SELECT ${sortKey} FROM videos ORDER BY ${sortKey} 
-                    ${sortOrder} LIMIT ${offset} ) 
-                ORDER BY ${sortKey} ${sortOrder} LIMIT ${limit}`, (err, rows) => {
+                sql, (err, rows) => {
                     if (err) {
                         return reject(err)
                     }
