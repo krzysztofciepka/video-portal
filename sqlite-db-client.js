@@ -47,7 +47,6 @@ class SqliteDbClient {
 
     async insertOne(item) {
         this.db.run(`INSERT INTO videos (
-            id, 
             name, 
             size, 
             path, 
@@ -56,7 +55,6 @@ class SqliteDbClient {
             type, 
             thumbnails) 
             VALUES(
-            '${item.id}',
             "${item.name}",
             ${item.size},
             "${item.path}",
