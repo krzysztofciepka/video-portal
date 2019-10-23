@@ -90,8 +90,8 @@ class SqliteDbClient {
         return new Promise((resolve, reject) => {
             this.db.all(
                 `SELECT * FROM videos ${key ? `WHERE ${key} = '${query[key]}'` : ` `} 
-                    ORDER BY ${sortKey} ${sortOrder} 
                     WHERE id > ${offset * limit} 
+                    ORDER BY ${sortKey} ${sortOrder} 
                     LIMIT ${limit}`, (err, rows) => {
                     if (err) {
                         return reject(err)
