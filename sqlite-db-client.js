@@ -22,7 +22,7 @@ class SqliteDbClient {
             let sql = 'SELECT COUNT(*) FROM videos'
             if (keys && keys.length) {
                 let key = keys[0];
-                sql = `SELECT COUNT(*) FROM videos WHERE ${key} LIKE '%${query[key].toString().replace('/i', '').replace('/', '')}%'`
+                sql = `SELECT COUNT(*) FROM videos WHERE ${key} LIKE "%${query[key].toString().replace('/i', '').replace('/', '')}%"`
             }
             this.db.all(sql, (err, rows) => {
                 if (err) {
@@ -106,7 +106,7 @@ class SqliteDbClient {
         const keys = Object.keys(query)
         if (keys && keys.length) {
             let key = keys[0];
-            sql = `SELECT * FROM videos WHERE ${key} LIKE '%${query[key].toString().replace('/i', '').replace('/', '')}%' LIMIT ${limit} OFFSET ${offset}`
+            sql = `SELECT * FROM videos WHERE ${key} LIKE "%${query[key].toString().replace('/i', '').replace('/', '')}%" LIMIT ${limit} OFFSET ${offset}`
         }
 
         return new Promise((resolve, reject) => {
