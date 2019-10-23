@@ -59,8 +59,9 @@ async function modelMapper(dir, filename) {
                 id: uuid(),
                 size: stats.size,
                 path: filepath,
+                duration_raw: parseInt(metadata.format.duration),
                 duration: moment.utc(moment.duration(parseInt(metadata.format.duration), "seconds").asMilliseconds()).format("HH:mm:ss"),
-                created_at: new Date(),
+                created_at: new Date().getTime(),
                 name: path.parse(filename).name,
                 type: path.parse(filename).ext.slice(1),
                 thumbnails
@@ -74,8 +75,9 @@ async function modelMapper(dir, filename) {
                 id: uuid(),
                 size: stats.size,
                 path: filepath,
+                duration_raw: parseInt(metadata.format.duration),
                 duration: moment.utc(moment.duration(parseInt(metadata.format.duration), "seconds").asMilliseconds()).format("HH:mm:ss"),
-                created_at: new Date(),
+                created_at: new Date().getTime(),
                 name: path.parse(filename).name,
                 type: path.parse(filename).ext.slice(1),
                 thumbnails: [
@@ -101,8 +103,9 @@ async function modelMapper(dir, filename) {
             id: uuid(),
             size: stats.size,
             path: filepath,
+            duration_raw: parseInt(metadata.format.duration),
             duration: moment.utc(moment.duration(parseInt(metadata.format.duration), "seconds").asMilliseconds()).format("HH:mm:ss"),
-            created_at: new Date(),
+            created_at: new Date().getTime(),
             name: path.parse(filename).name,
             type: path.parse(filename).ext.slice(1),
             thumbnails
@@ -130,7 +133,7 @@ async function toModels(dbClient, dir, mapper) {
 
 (async () => {
     let dbClient;
-    if(selectedDb === 'mongo'){
+    if (selectedDb === 'mongo') {
         dbClient = new MongoDbClient(dbUrl, 'video-portal')
     }
     else {

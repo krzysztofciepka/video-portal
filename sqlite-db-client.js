@@ -33,8 +33,9 @@ class SqliteDbClient {
             name TEXT, 
             size INTEGER, 
             path TEXT, 
+            duration_raw INTEGER,
             duration TEXT, 
-            created_at TEXT, 
+            created_at INTEGER, 
             type TEXT, 
             thumbnails TEXT
             )`
@@ -50,6 +51,7 @@ class SqliteDbClient {
             name, 
             size, 
             path, 
+            duration_raw,
             duration, 
             created_at, 
             type, 
@@ -58,8 +60,9 @@ class SqliteDbClient {
             "${item.name}",
             ${item.size},
             "${item.path}",
+            ${item.duration_raw},
             '${item.duration}',
-            '${new Date(item.created_at).toISOString()}',
+            ${item.created_at},
             '${item.type}',
             '${item.thumbnails.join('   ')}'
             )`
@@ -82,16 +85,19 @@ class SqliteDbClient {
     }
 
     async select(query, sort, offset, limit) {
-        const key = Object.keys(query)[0];
-
-        const sortKey = Object.keys(sort)[0]
+        let sortKey = Object.keys(sort)[0]
         const sortOrder = sort[sortKey] === 1 ? 'ASC' : 'DESC';
+
+        if (sortKey == 'duration') {
+            sortKey = "duration_raw"
+        }
 
         return new Promise((resolve, reject) => {
             this.db.all(
-                `SELECT * FROM videos ${key ? `WHERE ${key} = '${query[key]}' ` : `WHERE id > ${offset} `}  
-                    ORDER BY ${sortKey} ${sortOrder} 
-                    LIMIT ${limit}`, (err, rows) => {
+                `SELECT * FROM videos WHERE ${sortKey} NOT IN 
+                ( SELECT ${sortKey} FROM videos ORDER BY ${sortKey} 
+                    ${sortOrder} LIMIT ${offset} ) 
+                ORDER BY ${sortKey} ${sortOrder} LIMIT ${limit}`, (err, rows) => {
                     if (err) {
                         return reject(err)
                     }
@@ -101,8 +107,9 @@ class SqliteDbClient {
                             name: item.name,
                             size: item.size,
                             path: item.path,
+                            duration_raw: item.duration_raw,
                             duration: item.duration,
-                            created_at: item.created_at,
+                            created_at: new Date(item.created_at),
                             type: item.type,
                             thumbnails: item.thumbnails.split('   ')
                         }
@@ -123,8 +130,9 @@ class SqliteDbClient {
                         name: item.name,
                         size: item.size,
                         path: item.path,
+                        duration_raw: item.duration_raw,
                         duration: item.duration,
-                        created_at: item.created_at,
+                        created_at: new Date(item.created_at),
                         type: item.type,
                         thumbnails: item.thumbnails.split('   ')
                     }
