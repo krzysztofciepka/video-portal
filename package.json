@@ -26,7 +26,7 @@
     "express": "^4.17.1",
     "express-basic-auth": "^1.2.0",
     "fluent-ffmpeg": "^2.1.2",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.2",
     "moment": "^2.24.0",
     "mongodb": "^3.3.3",
     "pug": "^2.0.4",
