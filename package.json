@@ -23,7 +23,7 @@
   "homepage": "https://github.com/krzysztofciepka/video-portal#readme",
   "dependencies": {
     "compression": "^1.7.4",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-basic-auth": "^1.2.0",
     "fluent-ffmpeg": "^2.1.2",
     "minimist": "^1.2.0",
